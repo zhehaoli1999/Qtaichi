@@ -2,9 +2,9 @@
 
 ### 2020 USTC计算机图形学课程作业
 
-| 绘图                     | 粒子                      | 碰撞                      |
-| ------------------------ | ------------------------- | ------------------------- |
-| ![](./image/qtaichi.png) | ![](./image/qtaichi2.png) | ![](./image/qtaichi3.png) |
+| 绘图                      | 粒子                       | 碰撞                       |
+| ------------------------- | -------------------------- | -------------------------- |
+| ![](./images/qtaichi.png) | ![](./images/qtaichi2.png) | ![](./images/qtaichi3.png) |
 
 
 
@@ -90,7 +90,7 @@
 
   MFM的步骤如下所示。其被称为Hybrid Eulerian/Lagrangian Material Point Method的原因是在过程中需要通过样条插值进行粒子质量/动量到空间网格质量/动量的转换（即从Lagrangian视角转换到Eulerian视角），最后在网格上进行相应求解后，再将网格质量/动量转换到空间网格质量/动量（从Eulerian视角转换回Lagrangian视角）。
 
-  ![](./image/mfm.png)
+  ![](./images/mfm.png)
 
 
 
@@ -98,7 +98,7 @@
 
 ​	MLS-MPM方法是SIGGRAPH2018胡渊鸣等人针对MFM计算速度慢、边界计算难以得到质量保证等缺点提出的一种新的物质点模拟方法。论文摘要如下：
 
-<img src="./image/mlsmfm.png" style="zoom: 67%;" />
+<img src="./images/mlsmfm.png" style="zoom: 67%;" />
 
 
 
@@ -108,7 +108,7 @@
 
 1. **整体设计思路**
 
-   <img src="./image/overview.png" style="zoom: 67%;" />
+   <img src="./images/overview.png" style="zoom: 67%;" />
 
    
 
@@ -116,7 +116,7 @@
 
    整体界面：
 
-   <img src="./image/interface.png" style="zoom:50%;" />
+   <img src="./images/interface.png" style="zoom:50%;" />
 
    
 
@@ -124,11 +124,11 @@
 
    | icon                                                         | 含义               | 功能                                                         |
    | ------------------------------------------------------------ | ------------------ | ------------------------------------------------------------ |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/snow.png" style="zoom:33%;" /> | 选择粒子类型为雪   | 类型为雪时，画图的颜色为白色                                 |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/fluid.png" style="zoom:33%;" /> | 选择粒子类型为流体 | 类型为流体时，画图的颜色为淡蓝色                             |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/jelly.png" style="zoom:33%;" /> | 选择粒子类型为凝胶 | 选择粒子类型为流体类型为凝胶时，画图的颜色为橙色             |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/solid.png" style="zoom:33%;" /> | 选择粒子类型为固体 | 类型为固体时，画图的颜色为黑色                               |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/velocity.png" style="zoom:33%;" /> | 绘制速度线         | 类型为速度线时，画图的颜色为红色，并设置图形类型为直线。速度的大小与速度线的长度成正比，方向为线的方向 |
+   | <img src="./src/App/minidraw/resources/snow.png" style="zoom:33%;" /> | 选择粒子类型为雪   | 类型为雪时，画图的颜色为白色                                 |
+   | <img src="./src/App/minidraw/resources/fluid.png" style="zoom:33%;" /> | 选择粒子类型为流体 | 类型为流体时，画图的颜色为淡蓝色                             |
+   | <img src="./src/App/minidraw/resources/jelly.png" style="zoom:33%;" /> | 选择粒子类型为凝胶 | 选择粒子类型为流体类型为凝胶时，画图的颜色为橙色             |
+   | <img src="./src/App/minidraw/resources/solid.png" style="zoom:33%;" /> | 选择粒子类型为固体 | 类型为固体时，画图的颜色为黑色                               |
+   | <img src="./src/App/minidraw/resources/velocity.png" style="zoom:33%;" /> | 绘制速度线         | 类型为速度线时，画图的颜色为红色，并设置图形类型为直线。速度的大小与速度线的长度成正比，方向为线的方向 |
 
    
 
@@ -136,26 +136,26 @@
 
    | icon                                                         | 含义         | 功能                                                         |
    | ------------------------------------------------------------ | ------------ | ------------------------------------------------------------ |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/line_icon.png" style="zoom:33%;" /> | 绘制直线     | 在Qtaichi中，直线用于绘制速度线（**需要注意的是**：物体的速度线必须在绘制该物体之后绘制，中间不能间隔其他物体的绘制） |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/curve_icon.png" style="zoom:33%;" /> | 绘制自由曲线 | 用户可以在Qtaichi中使用自由曲线绘制任意想要的图形：字母、雪人、子弹、城堡等 |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/polygon_icon.png" style="zoom:33%;" /> | 绘制多边形   | 用户可以在Qtaichi中使用自由多边形绘制任意想要的多边形：斜坡、尖锥、平台等 |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/undo.png" style="zoom:33%;" /> | 撤销绘图     | 撤销上一次绘图操作，方便重画图形                             |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/clear.jpg" style="zoom:33%;" /> | 清空图形     | 清空界面中的所有图形                                         |
+   | <img src="./src/App/minidraw/resources/line_icon.png" style="zoom:33%;" /> | 绘制直线     | 在Qtaichi中，直线用于绘制速度线（**需要注意的是**：物体的速度线必须在绘制该物体之后绘制，中间不能间隔其他物体的绘制） |
+   | <img src="./src/App/minidraw/resources/curve_icon.png" style="zoom:33%;" /> | 绘制自由曲线 | 用户可以在Qtaichi中使用自由曲线绘制任意想要的图形：字母、雪人、子弹、城堡等 |
+   | <img src="./src/App/minidraw/resources/polygon_icon.png" style="zoom:33%;" /> | 绘制多边形   | 用户可以在Qtaichi中使用自由多边形绘制任意想要的多边形：斜坡、尖锥、平台等 |
+   | <img src="./src/App/minidraw/resources/undo.png" style="zoom:33%;" /> | 撤销绘图     | 撤销上一次绘图操作，方便重画图形                             |
+   | <img src="./src/App/minidraw/resources/clear.jpg" style="zoom:33%;" /> | 清空图形     | 清空界面中的所有图形                                         |
 
    仿真icon
 
    | icon                                                         | 含义     | 功能                                                         |
    | ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/simulate.jpg" style="zoom: 50%;" /> | 开始仿真 | 如果用户绘制了图形，Qtaichi将把封闭图形填充为相应类型的粒子，开始仿真 |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/pause.png" style="zoom:50%;" /> | 暂停仿真 | 暂停仿真，方便用户截图、或者向仿真中加入新的物体（不暂停时也可以直接加入新物体），按“开始仿真”按钮恢复。 |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/reset.png" style="zoom:33%;" /> | 回复     | 回复到上一次绘图的状态，方便重现仿真结果。                   |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/clear.png" style="zoom:33%;" /> | 终止仿真 | 停止仿真，并清空所有粒子                                     |
+   | <img src="./src/App/minidraw/resources/simulate.jpg" style="zoom: 50%;" /> | 开始仿真 | 如果用户绘制了图形，Qtaichi将把封闭图形填充为相应类型的粒子，开始仿真 |
+   | <img src="./src/App/minidraw/resources/pause.png" style="zoom:50%;" /> | 暂停仿真 | 暂停仿真，方便用户截图、或者向仿真中加入新的物体（不暂停时也可以直接加入新物体），按“开始仿真”按钮恢复。 |
+   | <img src="./src/App/minidraw/resources/reset.png" style="zoom:33%;" /> | 回复     | 回复到上一次绘图的状态，方便重现仿真结果。                   |
+   | <img src="./src/App/minidraw/resources/clear.png" style="zoom:33%;" /> | 终止仿真 | 停止仿真，并清空所有粒子                                     |
 
    雪类型icon
 
    | icon                                                         | 含义                | 功能                                                         |
    | ------------------------------------------------------------ | ------------------- | ------------------------------------------------------------ |
-   | <img src="../70_李喆昊_Homework1/src/App/minidraw/resources/num1.jpg" style="zoom: 33%;" /> | 设置当前雪的类型为1 | 用于各项参数对雪仿真效果的影响实验。在“三.测试结果”中将会具体介绍每一种类型对应的雪的参数 |
+   | <img src="./src/App/minidraw/resources/num1.jpg" style="zoom: 33%;" /> | 设置当前雪的类型为1 | 用于各项参数对雪仿真效果的影响实验。在“三.测试结果”中将会具体介绍每一种类型对应的雪的参数 |
 
    
 
@@ -167,9 +167,9 @@
 
         在使用taichi时，发现加入物体很麻烦，而且物体的形状难以编程控制，因此想到可以使用Qt进行绘制。在自由曲线绘图状态下，用户可以自由绘制一切可能的2D图形：字母、雪人、子弹、城堡、斜坡、尖锥、平台等，大大增强了仿真的自由度与趣味性。
 
-      | 字母                                              | 雪人                                              | 斜坡                                                         | 城堡                                            |
-      | ------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------- |
-      | ![](./image/qtaichi.png)![](./image/qtaichi2.png) | ![](./image/snowman.png)![](./image/snowman2.png) | <img src="./image/slope.png" style="zoom:80%;" />![](./image/slope2.png) | ![](./image/castle.png)![](./image/castle2.png) |
+      | 字母                                                | 雪人                                                | 斜坡                                                         | 城堡                                              |
+      | --------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------- |
+      | ![](./images/qtaichi.png)![](./images/qtaichi2.png) | ![](./images/snowman.png)![](./images/snowman2.png) | <img src="./images/slope.png" style="zoom:80%;" />![](./images/slope2.png) | ![](./images/castle.png)![](./images/castle2.png) |
       
       + 可暂停、可回放
       
@@ -246,12 +246,12 @@
 
    下表中的黑色三角形为一个硬度较大的弹性三角尖锥，雪块从上方自由落体，砸到尖锥上方然后裂开。
 
-   | <img src="./image/snow1.png" style="zoom:67%;" />            | <img src="./image/snow2.png" style="zoom:67%;" />            |
+   | <img src="./images/snow1.png" style="zoom:67%;" />           | <img src="./images/snow2.png" style="zoom:67%;" />           |
    | ------------------------------------------------------------ | ------------------------------------------------------------ |
    | 上图类型1 Lower Hardening：$E_0 = 1e4 \ \theta_c = 2.5e^{-2} \ \theta_s = 7.5e^{-3} \ \           \xi = 5.0$ | 上图类型2 Lower Young's Modulus: $E_0 = 0.2e4 \ \theta_c = 2.5e^{-2} \ \theta_s = 7.5e^{-3} \ \           \xi = 10.0$ |
-   | <img src="./image/snow3.png" style="zoom:67%;" />            | <img src="./image/snow4.png" style="zoom:67%;" />            |
+   | <img src="./images/snow3.png" style="zoom:67%;" />           | <img src="./images/snow4.png" style="zoom:67%;" />           |
    | 上图类型3 Lower critical compression: $E_0 = 1e4 \ \theta_c = 1.9e^{-2} \ \theta_s = 7.5e^{-3} \ \           \xi = 10.0$ | 上图类型4 Reference:$E_0 = 1e4 \ \theta_c = 2.5e^{-2} \ \theta_s = 7.5e^{-3} \ \           \xi = 10.0$ |
-   | <img src="./image/snow5.png" style="zoom:67%;" />            | <img src="./image/snow6.png" style="zoom:67%;" />            |
+   | <img src="./images/snow5.png" style="zoom:67%;" />           | <img src="./images/snow6.png" style="zoom:67%;" />           |
    | 上图类型5 Lower critical compression & strestch:$E_0 = 1e4 \ \theta_c = 1.9e^{-2} \ \theta_s = 5.0e^{-3} \ \           \xi = 10.0$ | 上图类型6 Lower strestch: $E_0 = 1e4 \ \theta_c = 2.5e^{-2} \ \theta_s = 5e^{-3} \ \           \xi = 10.0$ |
 
    从上表结果中可以看到：
@@ -264,41 +264,41 @@
 
 2. **射击子弹与雪人的碰撞**
 
-   | 绘图                   | 仿真开始                | 仿真中                  |
-   | ---------------------- | ----------------------- | ----------------------- |
-   | ![](./image/shoot.png) | ![](./image/shoot2.png) | ![](./image/shoot3.png) |
+   | 绘图                    | 仿真开始                 | 仿真中                   |
+   | ----------------------- | ------------------------ | ------------------------ |
+   | ![](./images/shoot.png) | ![](./images/shoot2.png) | ![](./images/shoot3.png) |
 
    
 
 3. **下落水锥与弹簧床的碰撞**
 
-   | 绘图                       | 仿真开始                    | 仿真中                      |
-   | -------------------------- | --------------------------- | --------------------------- |
-   | ![](./image/intowater.png) | ![](./image/intowater2.png) | ![](./image/intowater3.png) |
+   | 绘图                        | 仿真开始                     | 仿真中                       |
+   | --------------------------- | ---------------------------- | ---------------------------- |
+   | ![](./images/intowater.png) | ![](./images/intowater2.png) | ![](./images/intowater3.png) |
 
    
 
 4. **下落弹性锥与水床的碰撞**
 
-   | 绘图                       | 仿真开始                    | 仿真中                      |
-   | -------------------------- | --------------------------- | --------------------------- |
-   | ![](./image/intojelly.png) | ![](./image/intojelly2.png) | ![](./image/intojelly3.png) |
+   | 绘图                        | 仿真开始                     | 仿真中                       |
+   | --------------------------- | ---------------------------- | ---------------------------- |
+   | ![](./images/intojelly.png) | ![](./images/intojelly2.png) | ![](./images/intojelly3.png) |
 
    
 
 5. **四个雪球相撞于一处**
 
-   | 绘图                       | 仿真开始                    | 仿真中                      |
-   | -------------------------- | --------------------------- | --------------------------- |
-   | ![](./image/snowball4.png) | ![](./image/snowball42.png) | ![](./image/snowball43.png) |
+   | 绘图                        | 仿真开始                     | 仿真中                       |
+   | --------------------------- | ---------------------------- | ---------------------------- |
+   | ![](./images/snowball4.png) | ![](./images/snowball42.png) | ![](./images/snowball43.png) |
 
    
 
 6. **弹性面、弹性球、雪球、水幕综合碰撞**
 
-   | 绘图                   | 仿真开始                | 仿真中                  |
-   | ---------------------- | ----------------------- | ----------------------- |
-   | ![](./image/multi.png) | ![](./image/multi2.png) | ![](./image/multi3.png) |
+   | 绘图                    | 仿真开始                 | 仿真中                   |
+   | ----------------------- | ------------------------ | ------------------------ |
+   | ![](./images/multi.png) | ![](./images/multi2.png) | ![](./images/multi3.png) |
 
 
 
