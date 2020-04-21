@@ -53,7 +53,7 @@
 
 ## 一. 物质点法(MFM)原理 
 
-**1. Hybrid Eulerian/Lagrangian Material Point Method **
+**1. Hybrid Eulerian/Lagrangian Material Point Method**
 
 + Lagrangian视角与Eulerian视角
 
@@ -197,7 +197,7 @@
 
         Taichi后端与Qt前端的交互主要是``Taichi_simulation``类与``Minidraw_controller``类的交互。
 
-        <img src="./image/class.png" style="zoom: 67%;" />
+        <img src="./images/class.png" style="zoom: 67%;" />
 
         
 
@@ -227,7 +227,7 @@
 
    下图是SIGGRAPH2013 MFM论文中各项参数对雪仿真效果的影响实验结果。
 
-   <img src="./image/snow_type.png" style="zoom:67%;" />
+   <img src="./images/snow_type.png" style="zoom:67%;" />
 
    各项参数的含义：
 
@@ -240,7 +240,7 @@
 
    论文中的结论：
 
-   <img src="./image/exp.png" style="zoom: 67%;" />
+   <img src="./images/exp.png" style="zoom: 67%;" />
 
    在我的实验中，发现杨氏模量按照SIGGRAPH2013 MFM论文中设置为$10^{5}$次方量级会导致报错，原因应该是MLS-MFM与MFM的实现有差异导致的，因此将$E_0$按照MLS-MFM中$10^4$量级来设置。
 
