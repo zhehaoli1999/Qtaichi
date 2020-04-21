@@ -1,0 +1,35 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+  <file>./resources/icon.png</file>
+  <file>./resources/line_icon.png</file>
+  <file>./resources/curve_icon.png</file>
+  <file>./resources/circle_icon.png</file>
+  <file>./resources/ellipse_icon.png</file>
+  <file>./resources/rect_icon.png</file>
+  <file>./resources/polygon_icon.png</file>
+  <file>./resources/tri_icon.png</file>
+  <file>./resources/red.png</file>
+  <file>./resources/blue.png</file>
+  <file>./resources/black.png</file>
+  <file>./resources/yellow.png</file>
+  <file>./resources/green.png</file>
+  <file>./resources/simulate.jpg</file>
+  <file>./resources/undo.png</file>
+  <file>./resources/pause.png</file>
+  <file>./resources/reset.png</file>
+  <file>./resources/clear.png</file>
+  <file>./resources/clear.jpg</file>
+  <file>./resources/solid.png</file>
+  <file>./resources/jelly.png</file>
+  <file>./resources/fluid.png</file>
+  <file>./resources/snow.png</file>
+  <file>./resources/velocity.png</file>
+  <file>./resources/num1.jpg</file>
+  <file>./resources/num2.jpg</file>
+  <file>./resources/num3.jpg</file>
+  <file>./resources/num4.jpg</file>
+  <file>./resources/num5.jpg</file>
+  <file>./resources/num6.jpg</file>
+</qresource>
+</RCC>
