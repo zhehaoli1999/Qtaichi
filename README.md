@@ -1,4 +1,4 @@
-# Qtaichi ： 一个基于Taichi后端与Qt GUI前端的自由绘图仿真系统
+# Qtaichi: 基于Taichi后端与Qt GUI前端的自由绘图仿真系统
 
 ### 2020 USTC计算机图形学课程作业
 
