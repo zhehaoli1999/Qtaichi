@@ -31,5 +31,6 @@
   <file>./resources/num4.jpg</file>
   <file>./resources/num5.jpg</file>
   <file>./resources/num6.jpg</file>
+  <file>./resources/save.png</file>
 </qresource>
 </RCC>

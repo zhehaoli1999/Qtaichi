@@ -5,6 +5,7 @@
 #include "minidraw_controller.h"
 #include <QPushButton>
 #include <QToolButton>
+#include <QToolBar>
 using namespace minidraw;
 namespace Ui {
 class Minidraw;
@@ -55,6 +56,8 @@ public slots:
     void pause_simulation(void);
     void reset_simulation(void);
     void clear_simulation(void);
+    
+    void save_scene(void);
 
     void undo();
     void clear();
@@ -70,31 +73,8 @@ private:
     QToolBar* SnowType_toolbar;
 
     QSlider* slider_line_width;
-    QToolButton *button_red;
-    QToolButton *button_black;
-    QToolButton *button_blue;
-    QToolButton *button_yellow;
-    QToolButton *button_green;
-    QToolButton* button_white;
-    QToolButton* button_orange;
 
-    QAction * choose_line_act;
-    QAction * choose_curve_act;
-    QAction * choose_circle_act;
-    QAction * choose_ellipse_act;
-    QAction * choose_rect_act;
-    QAction * choose_tri_act;
-    QAction * choose_poly_act;
-
-    QAction* choose_snow_type[6]; // for snow type choosing in paper MFM Fig 8.
-
-    QAction* action_undo;
-    QAction* action_clear;
-
-    QAction* action_simulate;
-    QAction* action_pause_simul;
-    QAction* action_reset_simul;
-    QAction* action_clear_simul;
+    QAction* choose_snow_type[6]; // for snow type choosing in siggraph2013 paper MPM Fig 8.
 };
 
 #endif // MINIDRAW_H

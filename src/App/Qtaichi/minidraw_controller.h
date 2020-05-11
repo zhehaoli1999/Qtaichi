@@ -6,6 +6,7 @@
 #include "line.h"
 #include <QColor>
 #include <QSlider>
+#include <vector>
 
 using namespace minidraw;
 
@@ -46,6 +47,7 @@ public:
     void clear_simulation();
     void reset_simulation();
     void set_snow_type(int);
+    void save_scene();
 
     // To make Minidraw able to change the width and color of line through slider and button.
     friend class Minidraw;
@@ -60,8 +62,8 @@ private:
     int current_line_width;
     FigureType current_figure_type;
 
-    QVector<Figure*> figure_array;
-    QVector<Figure*> figure_array_backup;
+    std::vector<Figure*> figure_array;
+    std::vector<Figure*> figure_array_backup;
 
     Figure* p_current_figure;
 

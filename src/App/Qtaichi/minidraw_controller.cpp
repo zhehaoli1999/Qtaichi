@@ -2,6 +2,7 @@
 #include "ui_minidraw_controller.h"
 #include<QMouseEvent>
 #include<QPainter>
+#include <QFileDialog>
 #include"line.h"
 #include"rect.h"
 #include"circle.h"
@@ -10,14 +11,16 @@
 #include"polygon.h"
 #include "scanline.h"
 #include "taichi.h"
-#define DEBUG 1
 
 using namespace taichi;
 using namespace minidraw;
 using Vec = Vector2;
 using Mat = Matrix2;
 
-/***************************************************************************************/
+//******************************************************************************
+//                            Taichi Class & Variables 
+//******************************************************************************
+
 enum MatterType
 {
     Fluid = 0,
@@ -32,8 +35,8 @@ int window_w = 600;
 int window_h = 600;
 const real dt = 1e-4_f, frame_dt = 1e-3_f, dx = 1.0_f / n, inv_dx = 1.0_f / dx;
 int step = 0; // simulation step 
-const int velocity_ratio = 10; // velocity line length : speed 
-const float area_particle_ratio = 0.02; // area : num of particles 
+const int velocity_ratio = 10; // speed = ratio * velocity line length  
+const float area_particle_ratio = 0.015; // num of particles = ratio * area
 int snow_type = 4; // snow type
 
 class Simulation
@@ -54,8 +57,11 @@ public:
     bool plastic = true;
     
     struct Particle {
-        Vec x, v; Mat F, C; real Jp; QColor c;
-        MatterType ptype; /*0: fluid 1: jelly 2: snow 3: solid*/
+        Vec x, v; 
+        Mat F, C; 
+        real Jp; 
+        QColor c;
+        MatterType ptype;  /*0: fluid 1: jelly 2: snow 3: solid*/
 
         Particle(Vec x, Vec v = Vec(0), QColor c = Qt::red, MatterType ptype = Snow) :
             x(x), v(v), F(1), C(0),c(c), Jp(1), ptype(ptype)
@@ -63,58 +69,70 @@ public:
     };
 
     std::vector<Particle> particles;
-    Vector3 grid[n + 1][n + 1];          // velocity + mass, node_res = cell_res + 1
+    Vector3 grid[n + 1][n + 1];   
 
 public:
+
+    // MLS-MFM method from Taichi demo code
     void advance(real dt) {
-        std::memset(grid, 0, sizeof(grid));                              // Reset grid
-        for (auto& p : particles) {                                             // P2G
+        std::memset(grid, 0, sizeof(grid)); // Reset grid
+        for (auto& p : particles) {  // P2G
             Vector2i base_coord = (p.x * inv_dx - Vec(0.5_f)).cast<int>();//element-wise floor
             Vec fx = p.x * inv_dx - base_coord.cast<real>();
             // Quadratic kernels  [http://mpm.graphics   Eqn. 123, with x=fx, fx-1,fx-2]
-            Vec w[3]{ Vec(0.5) * sqr(Vec(1.5) - fx), Vec(0.75) - sqr(fx - Vec(1.0)),
-                     Vec(0.5) * sqr(fx - Vec(0.5)) };
+            Vec w[3]
+            { 
+                Vec(0.5) * sqr(Vec(1.5) - fx), 
+                Vec(0.75) - sqr(fx - Vec(1.0)),
+                Vec(0.5) * sqr(fx - Vec(0.5)) 
+            };
 
-           
             // set param according to type
+            /**************************************************/
             if (p.ptype == Snow) 
             {
                 set_snow_type(snow_type);
             }
             if (p.ptype == Solid) 
             { 
-                hardening = 20.0_f;  
+                E = 1.7e4_f;
+                hardening = 30.0_f;  // TODO: make solid type more like solid  
             }
+
             auto e = std::exp(hardening * (1.0_f - p.Jp));
             if (p.ptype == Jelly) e = 0.3;
 
             real mu_0 = E / (2 * (1 + nu)), lambda_0 = E * nu / ((1 + nu) * (1 - 2 * nu));
             auto mu = mu_0 * e, lambda = lambda_0 * e;
             if (p.ptype == Fluid) mu = 0;
+            /**************************************************/
 
 
-            real J = determinant(p.F);         //                         Current volume
+            real J = determinant(p.F); //Current volume
             Mat r, s; polar_decomp(p.F, r, s); //Polar decomp. for fixed corotated model
             auto stress =                           // Cauchy stress times dt and inv_dx
                 -4 * inv_dx * inv_dx * dt * vol * (2 * mu * (p.F - r) * transposed(p.F) + lambda * (J - 1) * J);
             auto affine = stress + particle_mass * p.C;
-            for (int i = 0; i < 3; i++) for (int j = 0; j < 3; j++) { // Scatter to grid
-                auto dpos = (Vec(i, j) - fx) * dx;
-                Vector3 mv(p.v * particle_mass, particle_mass); //translational momentum
-                grid[base_coord.x + i][base_coord.y + j] +=
-                    w[i].x * w[j].y * (mv + Vector3(affine * dpos, 0));
-            }
+            for (int i = 0; i < 3; i++) 
+                for (int j = 0; j < 3; j++) 
+                {  // Scatter to grid
+                    auto dpos = (Vec(i, j) - fx) * dx;
+                    Vector3 mv(p.v * particle_mass, particle_mass); //translational momentum
+                    grid[base_coord.x + i][base_coord.y + j] +=
+                        w[i].x * w[j].y * (mv + Vector3(affine * dpos, 0));
+                }
         }
         for (int i = 0; i <= n; i++) 
-            for (int j = 0; j <= n; j++) { //For all grid nodes
-            auto& g = grid[i][j];
-            if (g[2] > 0) {                                // No need for epsilon here
-                g /= g[2];                                   //        Normalize by mass
-                g += dt * Vector3(0, 200, 0);               //                  Gravity
-                real boundary = 0.05, x = (real)i / n, y = real(j) / n; //boundary thick.,node coord
-                if (x < boundary || x > 1 - boundary || y > 1 - boundary) g = Vector3(0); //Sticky
-                if (y < boundary) g[1] = std::max(0.0_f, g[1]);             //"Separate"
-            }
+            for (int j = 0; j <= n; j++) 
+            {   //For all grid nodes
+                auto& g = grid[i][j];
+                if (g[2] > 0) {                                // No need for epsilon here
+                    g /= g[2];                                   //        Normalize by mass
+                    g += dt * Vector3(0, 200, 0);               //                  Gravity
+                    real boundary = 0.05, x = (real)i / n, y = real(j) / n; //boundary thick.,node coord
+                    if (x < boundary || x > 1 - boundary || y > 1 - boundary) g = Vector3(0); //Sticky
+                    if (y < boundary) g[1] = std::max(0.0_f, g[1]);             //"Separate"
+                }
         }
         for (auto& p : particles) {                                // Grid to particle
             Vector2i base_coord = (p.x * inv_dx - Vec(0.5_f)).cast<int>();//element-wise floor
@@ -133,9 +151,11 @@ public:
             auto F = (Mat(1) + dt * p.C) * p.F;                      // MLS-MPM F-update
 
             // set param according to type
+            /*************************************************************/
             if (p.ptype == Fluid) { p.F = Mat(1) * sqrt(determinant(F)); }
             else if (p.ptype == Jelly) { p.F = F; }
-            else if (p.ptype == Snow) {
+            else if (p.ptype == Snow) 
+            {
                 Mat svd_u, sig, svd_v; svd(F, svd_u, sig, svd_v);
                 for (int i = 0; i < 2 * int(plastic); i++)                // Snow Plasticity
                     sig[i][i] = clamp(sig[i][i], 1.0_f - theta_c, 1.0_f + theta_s);
@@ -144,9 +164,11 @@ public:
                 p.Jp = Jp_new; p.F = F;
             }
             else if (p.ptype == Solid) { p.F = F ;  }
+            /*************************************************************/
         }
     }
 
+    // Add circle object in scene
     void add_object_circle(Vec center, real radius, QColor color, int num = 500, MatterType t = Snow, Vec velocity = Vec(0.0_f))
     {
         int i = 0;
@@ -161,6 +183,7 @@ public:
         }
     }
     
+    // Add rectangle object in scene
     void add_object_rectangle(Vec v1, Vec v2, QColor color, int num = 500, MatterType t = Snow, Vec velocity = Vec(0.0_f))
     {
         Vec box_min(min(v1.x, v2.x), min(v1.y, v2.y)), box_max(max(v1.x, v2.x), max(v1.y, v2.y));
@@ -176,13 +199,14 @@ public:
         }
     }
 
+    // Add polygon & free-hand object in scene
     void add_object_polygon(Figure* polygon, QColor color, int num = 500, MatterType t = Snow, Vec velocity = Vec(0.0_f))
     {
-        CScanLine scanline(polygon);
+        CScanLine scanline(polygon); // use scanline method here 
         int i = 0;
         float area = scanline.GetRectArea();
-        std::cout << "w:" << scanline.width << "h:"<< scanline.height<<endl;
-        std::cout << "polygon area:"<<area << endl;
+        //std::cout << "w:" << scanline.width << "h:"<< scanline.height<<endl;
+        //std::cout << "polygon area:"<<area << endl;
         num = (area * area_particle_ratio > num) ? area * area_particle_ratio : num;
         while (i < num) 
         {
@@ -206,6 +230,7 @@ public:
         advance(dt);
     }
 
+    // Set different snow type according to SIGGRAPH2013 MPM paper. 
     void set_snow_type(int type)
     {
         switch (type)
@@ -267,41 +292,10 @@ public:
 Simulation taichi_simulation;
 /***************************************************************************************/
 
-bool is_inside_polygon(Figure* polygon, Vec pos)
-{
-    int count = 0;
-    for (int i = 0; i < polygon->p_point_array.size(); i++)
-    {
-        QPointF p1, p2;
-        // let p1 have bigger x coordinate 
-        if (polygon->p_point_array[i].x() >= polygon->p_point_array[(i + 1) % polygon->p_point_array.size()].x())
-        {
-            p1 = polygon->p_point_array[i];
-            p2 = polygon->p_point_array[(i + 1) % polygon->p_point_array.size()];
-        }
-        else
-        {
-            p2 = polygon->p_point_array[i];
-            p1 = polygon->p_point_array[(i + 1) % polygon->p_point_array.size()];
-        }
-        auto max_x = p1.x();
-        auto min_x = p2.x();
-        auto max_y = p1.y() > p2.y() ? p1.y() : p2.y();
-        auto min_y = p1.y() > p2.y() ? p2.y() : p1.y();
-        if (pos.x <= min_x && pos.y >= min_y && pos.y <= max_y) count++;
-        if (p2.y() > p1.y())
-        {
-            if (pos.x <= p1.x() && pos.y >= p1.y() && pos.y <= p1.y() + (p1.x() - pos.x) * (p2.y() - p1.y()) / (p1.x() - p2.x())) count++;
-        }
-        else // p1.y() >= p2.y()
-        {
-            if (pos.x <= p1.x() && pos.y <= p1.y() && pos.y >= p2.y() + (pos.x - p2.x()) * (p1.y() - p2.y()) / (p1.x() - p2.x())) count++;
-        }
 
-    }
-    if (count % 2 == 0) return true;
-    else return false;
-}
+//******************************************************************************
+//                           Minidraw_controllers 
+//******************************************************************************
 
 Minidraw_controller::Minidraw_controller(QWidget *parent) :
     QWidget(parent),
@@ -309,8 +303,8 @@ Minidraw_controller::Minidraw_controller(QWidget *parent) :
 {
     ui->setupUi(this);
     current_line_width = 7; // line width be 7 initially
-    current_line_color = Qt::black; // set line color be black initially
-    current_figure_type = k_line; // set figure type be line initially
+    current_line_color = Qt::white; // set line color be white initially
+    current_figure_type = k_curve; // set figure type be free hand initially
 
     p_current_figure = nullptr;
     is_drawing_ploygon = false; // set is_drawing_polygon be false initially
@@ -482,14 +476,20 @@ void Minidraw_controller::paintEvent(QPaintEvent*)
 }
 
 void Minidraw_controller::add_objects()
-{
-    cout << window_h << " " << window_w << endl;
+{    
     for (int i = 0; i < figure_array.size(); i++)
     {
         auto p_figure = figure_array[i];
         bool has_init_velocity = false;
 
-        // get next figure: if next figure is velocity line, then can set velocity 
+        // 1. wrong type, just ignore it.
+        if (!dynamic_cast <minidraw::Line*>(p_figure)
+            && p_figure->get_color() == Qt::red)
+        {
+            continue; 
+        }
+
+        // 2. get next figure: if next figure is velocity line, then can set velocity 
         auto p_next_figure = figure_array[(i + 1) % figure_array.size()];
         if (dynamic_cast <minidraw::Line*>(p_next_figure) 
             && p_next_figure->get_color() == Qt::red)
@@ -499,7 +499,11 @@ void Minidraw_controller::add_objects()
 
         MatterType ptype;
         
-        // get type of particles according to line color
+        // 3. get type of particles according to line color: 
+        //  black: solid
+        //  white: snow
+        //  orange: jelly
+        //  blue: fluid
         auto figure_color = p_figure->get_color();
         if (figure_color == Qt::black) ptype = Solid;
         else if (figure_color == Qt::white) ptype = Snow;
@@ -509,28 +513,32 @@ void Minidraw_controller::add_objects()
         auto p_points = p_figure->p_point_array;
         
         // get object shape and create object
-        if (dynamic_cast <minidraw::Rect*>(p_figure))
+        // if figure type is rectangle
+        if (dynamic_cast <minidraw::Rect*>(p_figure) ) 
         {
             assert(p_points.size() == 2);
             auto x0 = float(p_points[0].x()) / window_w;
             auto y0 = float(p_points[0].y()) / window_h;
             auto x1 = float(p_points[1].x()) / window_w;
             auto y1 = float(p_points[1].y()) / window_h;
-            if (has_init_velocity) {
+            if (has_init_velocity) 
+            {
                 auto velocity_vector = p_next_figure->get_line_vector();
                 taichi_simulation.add_object_rectangle(
                     Vec(x0, y0), Vec(x1, y1), figure_color, 800, ptype,
                     Vec(velocity_vector.x() /velocity_ratio, velocity_vector.y() / velocity_ratio)
                 );
             }
-            else {
+            else 
+            {
                 taichi_simulation.add_object_rectangle(
                     Vec(x0, y0), Vec(x1, y1), figure_color, 800, ptype
                 );
             }
         }
 
-        else if (dynamic_cast <minidraw::Polygon*>(p_figure) || 
+        // if figure type is polygon, triangle or free-hand 
+        else if (dynamic_cast <minidraw::Polygon*>(p_figure) ||  
             dynamic_cast <minidraw::Triangle*>(p_figure) ||
             dynamic_cast <minidraw::Curve*>(p_figure))
         {
@@ -539,22 +547,27 @@ void Minidraw_controller::add_objects()
             auto y0 = float(p_points[0].y()) / window_h;
             auto x1 = float(p_points[1].x()) / window_w;
             auto y1 = float(p_points[1].y()) / window_h;
+
             //std::cout << "(" << x0 << ", " << y0 << "),( " << x1 << ", " << y1 << ")" << endl;
-            if (has_init_velocity) {
+            
+            if (has_init_velocity) 
+            {
                 auto velocity_vector = p_next_figure->get_line_vector();
                 taichi_simulation.add_object_polygon(
                     p_figure, figure_color, 800, ptype,
                     Vec(velocity_vector.x()/ velocity_ratio, velocity_vector.y() / velocity_ratio)
                 );
             }
-            else {
+            else 
+            {
                 taichi_simulation.add_object_polygon(
                     p_figure, figure_color, 800, ptype
                 );
             }
         }
 
-        else if (dynamic_cast <Circle*>(p_figure)) // if it is circle 
+        // if figure type is circle 
+        else if (dynamic_cast <Circle*>(p_figure)) 
         {
             auto p_points = p_figure->p_point_array;
             assert(p_points.size() == 2);
@@ -562,14 +575,16 @@ void Minidraw_controller::add_objects()
             auto y0 = float(p_points[0].y()) / window_h;
             auto x1 = float(p_points[1].x()) / window_w;
             auto y1 = float(p_points[1].y()) / window_h;
-            if (has_init_velocity) {
+            if (has_init_velocity) 
+            {
                 auto velocity_vector = p_next_figure->get_line_vector();
                 taichi_simulation.add_object_circle(
                     Vec((x0 + x1) / 2, (y0 + y1) / 2), (x1 - x0) / 2, figure_color, 800, ptype,
                     Vec(velocity_vector.x() / velocity_ratio, velocity_vector.y() / velocity_ratio)
                 );
             }
-            else {
+            else 
+            {
                 taichi_simulation.add_object_circle(
                     Vec((x0 + x1) / 2, (y0 + y1) / 2), (x1 - x0) / 2, figure_color, 800, ptype
                 );
@@ -577,9 +592,9 @@ void Minidraw_controller::add_objects()
         }
     }
     
-    // copy figure_array to figure_array_backup, NOTE: no need to clear figure_Array_backup here
-    //std::copy(figure_array.begin(), figure_array.end(), figure_array_backup.end());
-    figure_array_backup = figure_array;
+    // insert figure_array to the end of figure_array_backup, NOTE: no need to clear figure_Array_backup here
+    figure_array_backup.insert(figure_array_backup.end(), figure_array.begin(), figure_array.end());
+
     // the end, clear figure_array
     figure_array.clear(); 
 }
@@ -611,14 +626,17 @@ void Minidraw_controller::reset_simulation()
     is_simulating = false;
     figure_array.clear();
     taichi_simulation.particles.clear();
+
     figure_array = figure_array_backup;
-    //std::copy(figure_array_backup.begin(), figure_array_backup.end(), figure_array.end());
+    figure_array_backup.clear(); // clear backup figure array here;
     repaint();
 }
 
 void Minidraw_controller::clear_simulation()
 {
     is_simulating = false;
+    figure_array.clear();
+    figure_array_backup.clear();
     taichi_simulation.particles.clear();
     repaint();
 }
@@ -641,4 +659,15 @@ void Minidraw_controller::clearFigure()
 void Minidraw_controller::set_snow_type(int type)
 {
     if(type <= 6 && type >=1) snow_type = type;
+}
+
+void Minidraw_controller::save_scene()
+{
+    QPixmap pix = this->grab(); // get screen shot
+    QString img_name = "temp.png";
+    QString img_path = QFileDialog::getSaveFileName(this, tr("Save Scene"), img_name, "Image Files (*.png *.jpg *.bmp)");
+    if (!img_path.isNull())
+    {
+        pix.save(img_path);
+    }
 }
