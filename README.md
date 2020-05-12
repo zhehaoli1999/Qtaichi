@@ -12,7 +12,7 @@
 
 ### Build 方法
 
-+ 使用cmake即可。
++ 使用cmake三连：configure，generate，open project然后build
 
   （使用了@[Ubpa](https://github.com/Ubpa)的[UCMake](https://github.com/Ubpa/UCMake)工具）
 
