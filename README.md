@@ -1,6 +1,8 @@
 ![](./images/qtaichi.png)
 
-## 项目介绍请见知乎：[Taichi编程语言初探：太极之趣——自由绘制的2D冰雪仿真世界](https://zhuanlan.zhihu.com/p/139165414)
+### Qtaichi 是一个基于Taichi MLS-MPM方法与Qt GUI前端的自由绘图仿真系(玩)统(具)。
+
+### 项目介绍请见知乎：[Taichi编程语言初探：太极之趣——自由绘制的2D冰雪仿真世界](https://zhuanlan.zhihu.com/p/139165414)
 
 ---
 
