@@ -12,11 +12,11 @@
 
 ---
 
-### Build 方法
+### 安装方法
 
-+ 使用cmake三连：configure，generate，open project然后build
++ **方法一**（使用Qtaichi_installer一键安装，win x64系统推荐）：运行``./Qtaichi_installer/Release/setup.exe``即可！
 
-  （使用了@[Ubpa](https://github.com/Ubpa)的[UCMake](https://github.com/Ubpa/UCMake)工具）
++ **方法二**（从源码编译）：使用cmake三连：configure，generate，open project然后build（使用了@[Ubpa](https://github.com/Ubpa)的[UCMake](https://github.com/Ubpa/UCMake)工具）
 
 ---
 
