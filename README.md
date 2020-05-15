@@ -16,6 +16,8 @@
 
 + **方法一**（使用Qtaichi_installer一键安装，win x64系统推荐）：运行``./Qtaichi_installer/Release/setup.exe``即可！
 
+  若国内从github pull速度慢可以使用使用gitee：https://gitee.com/zhehaoli/Qtaichi
+
 + **方法二**（从源码编译）：使用cmake三连：configure，generate，open project然后build（使用了@[Ubpa](https://github.com/Ubpa)的[UCMake](https://github.com/Ubpa/UCMake)工具）
 
 ---
