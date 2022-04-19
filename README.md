@@ -16,6 +16,7 @@ Qtaichi is a **real-time** simulator turning user drawing inputs to physics-base
 ### How to install 
 
 + **Method 1**(Recommand on Winx64)：
+
   Directly run ``./Qtaichi_installer/Release/setup.exe``. 
 
   If Chinese users meet problems with pulling this repo from github , you can try gitee：https://gitee.com/zhehaoli/Qtaichi
@@ -47,15 +48,12 @@ You can use the toolbar on GUI to:
 
 3. Water Spike 
   ![](./images/demo2.png)
-  ![](./images/demo2-2.png) 
 
 4. Jelly Spike
   ![](./images/demo3.png)
-  ![](./images/demo3-2.png) 
 
 5. Snowball fight 
   ![](./images/demo4.png)
-  ![](./images/demo4-2.png) 
 
 ### Update
 
