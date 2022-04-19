@@ -2,11 +2,11 @@
 
 ![](./images/qtaichi-all.png)
 
-Qtaichi is a **real-time** simulator turning user drawing inputs to physics-based animations with Moving Least Squares Material Point Method based on ``taichi.h`` developed by [Yuanming Hu](https://github.com/yuanming-hu). 
+Qtaichi is a real-time simulator turning user drawing inputs to physics-based animations with Moving Least Squares Material Point Method based on ``taichi.h`` developed by [Yuanming Hu](https://github.com/yuanming-hu). 
 
 > "Qtaichi" is the combination of "Qt & taichi".  
 
-Written in C++ by Zhehao Li as a homework on computer graphics course taught by Prof. Ligang Liu at USTC. 
+Written in C++ by Zhehao Li as a homework on the computer graphics course taught by Prof. Ligang Liu at USTC. 
 
 
 ### Introduction Article (In Chinese) 中文介绍
@@ -82,13 +82,13 @@ You can use the toolbar on GUI to:
   | --------------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------- |
   | <img src="./images/demo3.png" style="zoom:130%;" /> | <img src="./images/demo3-1.png" style="zoom: 130%;" /> | <img src="./images/demo3-2.png" style="zoom: 80%;" /> |
 
-    
+​    
 
 5. **Snowball fight** 
 
-  | Particle                                              | Drawing                                            | Animation                                             |
-  | ----------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------- |
-  | <img src="./images/demo4-1.png" style="zoom:150%;" /> | <img src="./images/demo4.png" style="zoom:80%;" /> | <img src="./images/demo4-2.png" style="zoom:130%;" /> |
+| Drawing                                             | Particle                                              | Animation                                             |
+| --------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| <img src="./images/demo4.png" style="zoom:150%;" /> | <img src="./images/demo4-1.png" style="zoom:150%;" /> | <img src="./images/demo4-2.png" style="zoom:130%;" /> |
 
 
 
